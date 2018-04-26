@@ -22,6 +22,10 @@ before_build:
   - echo "Building Version %version%"
 
 build_script:
+  # Move to Build Directory
+  - mkdir build
+  - cd build
+
   # Configure Build Environment
   - if "%platform%" == "x86" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
   - if "%platform%" == "x64" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
