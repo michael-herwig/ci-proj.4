@@ -38,7 +38,7 @@ build_script:
   - cmake -G "%cmake_generator%" "-DCMAKE_BUILD_TYPE=%configuration%" -DCMAKE_INSTALL_PREFIX=C:\Temp\proj4 -DBUILD_LIBPROJ_SHARED=ON -DBUILD_CCT=OFF -DBUILD_CS2CS=OFF -DBUILD_GEOD=OFF -DBUILD_GIE=OFF -DBUILD_NAD2BIN=OFF -DBUILD_PROJ=OFF -DBUILD_TESTING=OFF  ..
   
   # Build & Install
-  - cmake cmake --build . --config "%configuration%" --target install
+  - cmake --build . --config "%configuration%" --target install
 
   # Create Artifact
   - set build_tag=msvc15-%configuration%-%platform%
