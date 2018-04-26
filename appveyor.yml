@@ -45,10 +45,7 @@ build_script:
   - set artifact_name=proj.4-%version%-%build_tag%.zip
   - 7z a "%artifact_name%" C:\Temp\proj4\*
 
-test_script:
-  - ctest -C "%configuration%"
-
-after_test:
+after_build:
   - appveyor PushArtifact "%artifact_name%"
 
 deploy:
