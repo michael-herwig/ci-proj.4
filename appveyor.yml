@@ -1,0 +1,58 @@
+image:
+  - Visual Studio 2017
+
+configuration:
+  - Debug
+  - Release
+
+platform:
+  - x64
+  - x86
+
+before_build:
+  - git submodule update --init --recursive
+  - cd proj.4
+
+  # Extract Version
+  - ps: |
+    $var=Get-Content .\CMakeLists.txt | Select-String -Pattern 'proj_version\(MAJOR (\d) MINOR (\d) PATCH (\d)\)' | % { $_.Matches[0].Groups } | % { $_.Value } | Select-Object -Skip 1
+    [String]::Join(".", $var) | Out-File -Encoding ASCII .\version
+
+  - set /P version=<version
+  - echo "Building Version %version%"
+
+build_script:
+  # Configure Build Environment
+  - if "%platform%" == "x86" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
+  - if "%platform%" == "x64" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+
+  # Configure Cmake-Generator
+  - if "%platform%" == "x86" set cmake_generator=Visual Studio 15 2017
+  - if "%platform%" == "x64" set cmake_generator=Visual Studio 15 2017 Win64
+
+  # Project Configuration
+  - cmake -G "%cmake_generator%" "-DCMAKE_BUILD_TYPE=%configuration%" -DCMAKE_INSTALL_PREFIX=C:\Temp\proj4 -DBUILD_LIBPROJ_SHARED=ON -DBUILD_CCT=OFF -DBUILD_CS2CS=OFF -DBUILD_GEOD=OFF -DBUILD_GIE=OFF -DBUILD_NAD2BIN=OFF -DBUILD_PROJ=OFF -DBUILD_TESTING=OFF  ..
+  
+  # Build & Install
+  - cmake cmake --build . --config "%configuration%" --target install
+
+  # Create Artifact
+  - set build_tag=msvc15-%configuration%-%platform%
+  - set artifact_name=proj.4-%version%-%build_tag%.zip
+  - 7z a "%artifact_name%" C:\Temp\proj4\*
+
+test_script:
+  - ctest
+
+after_test:
+  - appveyor PushArtifact "%artifact_name%"
+
+deploy:
+  release: $(version)
+  tag: $(version)
+  force_update: true
+  description: 'AppVeyor CD'
+  provider: GitHub
+  auth_token:
+    secure: aWupJYJFNmN8GhkiNHaV412MnmQuedA9npndju27MejT80u1ERbwRvIt4qptWyDn
+  artifact: $(artifact_name)
