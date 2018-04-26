@@ -15,8 +15,8 @@ before_build:
 
   # Extract Version
   - ps: |
-    $var=Get-Content .\CMakeLists.txt | Select-String -Pattern 'proj_version\(MAJOR (\d) MINOR (\d) PATCH (\d)\)' | % { $_.Matches[0].Groups } | % { $_.Value } | Select-Object -Skip 1
-    [String]::Join(".", $var) | Out-File -Encoding ASCII .\version
+      $var=Get-Content .\CMakeLists.txt | Select-String -Pattern 'proj_version\(MAJOR (\d) MINOR (\d) PATCH (\d)\)' | % { $_.Matches[0].Groups } | % { $_.Value } | Select-Object -Skip 1
+      [String]::Join(".", $var) | Out-File -Encoding ASCII .\version
 
   - set /P version=<version
   - echo "Building Version %version%"
