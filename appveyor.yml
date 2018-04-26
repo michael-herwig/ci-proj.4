@@ -46,7 +46,7 @@ build_script:
   - 7z a "%artifact_name%" C:\Temp\proj4\*
 
 test_script:
-  - ctest
+  - ctest -C %configuration%
 
 after_test:
   - appveyor PushArtifact "%artifact_name%"
